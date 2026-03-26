@@ -1,8 +1,8 @@
 {
-  "name": "visa-mcp-starter",
+  "name": "visa-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "Visa Intelligent Commerce MCP Integration Starter Kit",
+  "description": "AI tools, examples, and integrations for the Visa Developer Platform",
   "packageManager": "npm@11.6.2",
   "workspaces": [
     "packages/*",
@@ -20,9 +20,13 @@
   },
   "keywords": [
     "visa",
+    "ai",
     "mcp",
     "intelligent-commerce",
-    "model-context-protocol"
+    "model-context-protocol",
+    "gemini",
+    "claude",
+    "skills"
   ],
   "devDependencies": {
     "@types/node": "^22.10.2",
