@@ -70,8 +70,10 @@ vic-agent/apps/web/*.pem
 *.pem
 
 # CLAUDE / MISC
+.claude/
 settings.local.json
 **/settings.local.json
+apps/mpp-card-examples/
 
 # LANGUAGEGRAPH / CREDENTIALS / PROJECT SECRETS
 **/.langgraph_api
