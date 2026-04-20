@@ -1,11 +1,14 @@
 ---
 name: visa-best-practices
 description: >
-  Best practices and integration guide for the Visa Developer Platform (VDP) and Visa Intelligent Commerce (VIC).
-  Use when building or debugging integrations with Visa APIs, including: authentication setup (X-Pay Token, Two-Way SSL / Mutual TLS),
-  Message Level Encryption (MLE/JWE), credential management, environment configuration (Sandbox, Certification, Production),
-  VIC agent commerce workflows (card enrollment, purchase instructions, payment credentials), or MCP-based Visa API integration.
-  Also use when the user references Visa Developer, VDP, VIC, X-Pay Token, or Visa MLE.
+  Best practices and integration guide for the Visa Developer Platform (VDP), Visa Intelligent Commerce (VIC),
+  and the Machine Payments Protocol (MPP). Use when building or debugging integrations with Visa APIs, including:
+  authentication setup (X-Pay Token, Two-Way SSL / Mutual TLS), Message Level Encryption (MLE/JWE),
+  credential management, environment configuration (Sandbox, Certification, Production),
+  VIC agent commerce workflows (card enrollment, purchase instructions, payment credentials),
+  MCP-based Visa API integration, or MPP card charge flows (HTTP 402 payment challenges, encrypted network tokens).
+  Also use when the user references Visa Developer, VDP, VIC, X-Pay Token, Visa MLE, MPP, Machine Payments Protocol,
+  HTTP 402 payments, or payment authentication.
 ---
 
 # Visa Developer Platform Integration Guide
@@ -76,3 +79,9 @@ MLE provides end-to-end payload encryption using JWE. See the [Encryption Guide]
 For VIC integration (card enrollment, purchase instructions, payment credentials, agent commerce workflows), see:
 
 **[references/visa-intelligent-commerce.md](references/visa-intelligent-commerce.md)**
+
+### Machine Payments Protocol (MPP)
+
+For MPP card charge integration (HTTP 402 payment challenges, encrypted network token credentials, Client Enabler interface, receipts), see:
+
+**[references/machine-payments-protocol.md](references/machine-payments-protocol.md)**
