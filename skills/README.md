@@ -19,7 +19,13 @@ Best practices and integration guide for the Visa Developer Platform (VDP) and V
 
 ## Installation
 
-Clone the repository:
+You can install the skills repository using NPX:
+
+```bash
+npx skills add visa/ai
+```
+
+Or clone the repository manually:
 
 ```bash
 git clone https://github.com/visa/ai.git
