@@ -96,11 +96,8 @@ export async function tokenizeCard(
 
   // Idempotency guard: Skip if already tokenized
   if (state.private_tokenId) {
-    console.log(
-      "Card already tokenized (tokenId:",
-      state.private_tokenId,
-      "), skipping tokenization"
-    );
+    // Do not log the provisioned token id (sensitive payment-token reference).
+    console.log("Card already tokenized, skipping tokenization");
     return {}; // Return empty state to preserve existing tokenId
   }
 
@@ -157,11 +154,13 @@ export async function tokenizeCard(
     const vProvisionedTokenID = result?.data?.vProvisionedTokenID;
 
     if (!vProvisionedTokenID) {
-      console.error("vProvisionedTokenID not found in response:", result);
+      // Do not log the raw VTS response — it can contain token/card data.
+      console.error("vProvisionedTokenID not found in tokenization response");
       throw new Error("Token ID not found in response");
     }
 
-    console.log("Card tokenization successful, tokenId:", vProvisionedTokenID);
+    // Do not log the provisioned token id (sensitive payment-token reference).
+    console.log("Card tokenization successful");
 
     return {
       private_tokenId: vProvisionedTokenID,
