@@ -196,12 +196,14 @@ export function Thread() {
     // Only send data on first message of thread.
     // Note: raw card data is never resent here. It is encrypted and submitted
     // once at enrollment (card-data-prompt / card-section); thereafter only the
-    // non-sensitive token ID is needed to identify the enrolled card.
+    // provisioned token ID (a sensitive Visa-Restricted payment-token reference)
+    // is needed to identify the enrolled card.
     if (isFirstMessageForThread) {
       // Send token ID if available
       if (tokenId) {
         stateUpdate.private_tokenId = tokenId;
-        console.log("[Thread] Sending private_tokenId:", tokenId);
+        // Do not log the provisioned token id (sensitive payment-token reference).
+        console.log("[Thread] Sending token id");
       }
 
       // Send VTS IDs

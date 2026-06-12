@@ -65,7 +65,9 @@ export async function retrievePaymentCredentials(
   );
 
   console.log(' ✅ Payment credentials retrieved successfully');
-  console.log(JSON.stringify(response, null, 2));
+  // Do not log the full response — it contains payment credential / cryptogram
+  // material (authorization, signedPayload). PAN/sensitive credential data must
+  // not be written to console/logs (security-logging-dsr 11.2; PCI A3.2.6).
 
   return response;
 }
