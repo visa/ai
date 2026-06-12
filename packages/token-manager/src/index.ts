@@ -125,33 +125,55 @@ export function loadVisaCredentials(): VisaCredentials {
  * @throws {Error} if any check fails.
  */
 function verifyCertificateChain(x5c: string[], kid: string | undefined): void {
+  if (!Array.isArray(x5c) || x5c.length === 0) {
+    throw new Error(`JWKS key ${kid || ''} has no x5c certificate chain to verify`);
+  }
   const certs = x5c.map((b64) => new X509Certificate(Buffer.from(b64.replace(/\s/g, ''), 'base64')));
   const leaf = certs[0];
 
-  const now = Date.now();
-  if (now < Date.parse(leaf.validFrom) || now > Date.parse(leaf.validTo)) {
-    throw new Error(`JWKS leaf certificate ${kid || ''} is outside its validity window`);
+  const caPem = process.env.VISA_JWKS_CA_PEM;
+  const pinnedFingerprint = process.env.VISA_JWKS_CERT_FINGERPRINT;
+  const normalize = (f: string) => f.replace(/[:\s]/g, '').toLowerCase();
+
+  // Fail closed: refuse to trust a JWKS key unless a trust anchor is configured.
+  // Without an anchor, chain "linkage" only proves the chain is internally
+  // consistent — an attacker can present a fully self-consistent forged chain
+  // (incl. a single self-signed cert), so linkage alone is not trust.
+  if (!caPem && !pinnedFingerprint) {
+    throw new Error(
+      'JWKS trust anchor not configured: set VISA_JWKS_CA_PEM (trusted root) or ' +
+      'VISA_JWKS_CERT_FINGERPRINT (leaf sha256 pin). Refusing to trust an unanchored chain.'
+    );
   }
 
-  // Verify chain linkage: each cert must be issued by and signed by the next.
+  // Every certificate in the chain must currently be within its validity window.
+  const now = Date.now();
+  for (const c of certs) {
+    if (now < Date.parse(c.validFrom) || now > Date.parse(c.validTo)) {
+      throw new Error(`JWKS certificate ${kid || ''} is outside its validity window`);
+    }
+  }
+
+  // Verify chain linkage: each cert must be issued by and signed by the next,
+  // and every issuer must itself be a CA (basicConstraints CA:TRUE).
   for (let i = 0; i < certs.length - 1; i++) {
     const issuer = certs[i + 1];
     if (!certs[i].checkIssued(issuer) || !certs[i].verify(issuer.publicKey)) {
       throw new Error(`JWKS certificate chain is broken at position ${i} (${kid || ''})`);
     }
-  }
-
-  // Optional pin: leaf fingerprint must match the configured value.
-  const pinnedFingerprint = process.env.VISA_JWKS_CERT_FINGERPRINT;
-  if (pinnedFingerprint) {
-    const normalize = (f: string) => f.replace(/[:\s]/g, '').toLowerCase();
-    if (normalize(leaf.fingerprint256) !== normalize(pinnedFingerprint)) {
-      throw new Error(`JWKS leaf certificate fingerprint does not match the pinned value`);
+    if (issuer.ca !== true) {
+      throw new Error(`JWKS chain issuer at position ${i + 1} is not a CA (${kid || ''})`);
     }
   }
 
-  // Trust anchor: verify the chain terminates at a configured trusted root.
-  const caPem = process.env.VISA_JWKS_CA_PEM;
+  // Leaf fingerprint pin (exact end-entity match).
+  if (pinnedFingerprint && normalize(leaf.fingerprint256) !== normalize(pinnedFingerprint)) {
+    throw new Error('JWKS leaf certificate fingerprint does not match the pinned value');
+  }
+
+  // Trusted-root anchor: the top of the chain must equal, or be signed by, the
+  // configured CA. A single self-signed leaf (length-1 x5c) only passes here if
+  // it is itself the pinned cert / configured CA — never on linkage alone.
   if (caPem) {
     const ca = new X509Certificate(caPem);
     const top = certs[certs.length - 1];
@@ -159,17 +181,23 @@ function verifyCertificateChain(x5c: string[], kid: string | undefined): void {
     if (!trusted) {
       throw new Error('JWKS certificate chain does not terminate at the trusted Visa root CA');
     }
-  } else if (!pinnedFingerprint) {
-    // No configured trust anchor. Chain linkage + validity are verified above,
-    // but pin a fingerprint or set VISA_JWKS_CA_PEM for full trust.
-    console.warn(
-      'JWKS trust anchor not configured (VISA_JWKS_CA_PEM / VISA_JWKS_CERT_FINGERPRINT); verifying chain linkage and validity only.'
-    );
   }
+
+  // NOTE: certificate revocation (OCSP/CRL) is not performed in-process here;
+  // deployments must terminate the JWKS fetch over TLS to a pinned endpoint and
+  // enforce revocation at the PKI/network layer. The fingerprint pin above is
+  // the in-code defense against a revoked/rotated leaf being accepted.
 }
 
 async function getVisaJwksKey(credentials: VisaCredentials): Promise<JWK> {
   const jwksUrl = `${credentials.baseUrl}/.well-known/jwks`;
+
+  // Enforce HTTPS for the JWKS fetch: fetching keys over plaintext HTTP would
+  // let a network attacker substitute the key set (MITM), defeating the chain
+  // validation below.
+  if (new URL(jwksUrl).protocol !== 'https:') {
+    throw new Error('JWKS endpoint must be served over HTTPS');
+  }
 
   const res = await fetch(jwksUrl);
   if (!res.ok) {
