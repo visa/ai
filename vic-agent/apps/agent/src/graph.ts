@@ -1,6 +1,7 @@
 import { StateGraph, START, END } from "@langchain/langgraph";
 import {
   GraphState,
+  InputStateAnnotation,
   OutputStateAnnotation,
   isCreateChallengeError,
 } from "./utils/state.js";
@@ -228,6 +229,7 @@ console.log("=== GRAPH.TS: Created checkpointer ===");
 // Build flattened workflow with all nodes
 const workflow = new StateGraph({
   stateSchema: GraphState,
+  input: InputStateAnnotation,
   output: OutputStateAnnotation,
 })
   .addNode(NODE_NAMES.ROUTER, router)

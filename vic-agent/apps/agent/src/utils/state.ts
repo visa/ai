@@ -743,3 +743,63 @@ export const OutputStateAnnotation = Annotation.Root({
    */
   cardDeletionSignal: cardDeletionSignalChannel,
 });
+
+/**
+ * Input schema defining which channels are addressable from a client payload
+ * (the initial stream.submit and interrupt-resume writes) (AISAST-10709 round 2).
+ *
+ * Why this exists: a StateGraph with no input schema accepts ANY GraphState
+ * channel from the client payload. That meant a client could seed
+ * private_serverTokenId on the FIRST write — the deny-by-default
+ * serverTokenIdChannel reducer only blocks OVERWRITE of an already-bound value,
+ * not the initial bind — which merely RELOCATED the IDOR instead of closing it.
+ *
+ * By declaring an explicit input schema, LangGraph filters every client payload
+ * down to ONLY the channels listed here. private_serverTokenId, private_tokenId,
+ * and every other server-only private_* channel are DELIBERATELY OMITTED, so
+ * they are NOT client-addressable. The server-side write in tokenizeCard then
+ * becomes the only path that can set private_serverTokenId.
+ *
+ * Channels are reused from the EXISTING GraphState channel instances (shared
+ * module-level constants where they exist, GraphState.spec.* otherwise) so
+ * LangGraph sees the same instances in both schemas. This list contains exactly
+ * the keys the web client writes via stream.submit (initial message +
+ * add-card/VTS/OTP interrupt-resume values): adding others would over-expose the
+ * graph; omitting any of these would break the corresponding client-driven flow.
+ */
+export const InputStateAnnotation = Annotation.Root({
+  // Conversation input (initial human message / regenerate).
+  messages: messagesChannel,
+
+  // User-intent flow: product/budget can be supplied by the client.
+  product: GraphState.spec.product,
+  budget: GraphState.spec.budget,
+
+  // Collected alongside the encrypted card payload at enrollment.
+  email: GraphState.spec.email,
+
+  // Public one-time action trigger (e.g. "delete-card"). The destructive
+  // delete-card flow intentionally carries NO token id from the client; the
+  // server-bound private_serverTokenId is the authorization control.
+  action: actionChannel,
+
+  // Client-supplied, client-side-encrypted card payload submitted at
+  // enrollment. Decrypted in-memory inside tokenizeCard and then purged. This
+  // is the ONLY private_* card channel that is legitimately client-writable.
+  private_encryptedCardData: GraphState.spec.private_encryptedCardData,
+
+  // VTS identifiers generated in the UI and sent on the first message.
+  clientReferenceId: GraphState.spec.clientReferenceId,
+  private_vtsClientDeviceId: GraphState.spec.private_vtsClientDeviceId,
+
+  // VTS / device-binding interrupt-resume values supplied by the client.
+  private_vtsAuthenticationSessionData:
+    GraphState.spec.private_vtsAuthenticationSessionData,
+  private_vtsRetryCount: GraphState.spec.private_vtsRetryCount,
+  private_selectedValidationMethod:
+    GraphState.spec.private_selectedValidationMethod,
+  private_otpCode: GraphState.spec.private_otpCode,
+
+  // NOTE: private_serverTokenId and private_tokenId are DELIBERATELY OMITTED so
+  // they cannot be seeded or overwritten from any client payload (AISAST-10709).
+});
