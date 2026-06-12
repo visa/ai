@@ -1,6 +1,6 @@
 import { RunnableConfig } from "@langchain/core/runnables";
 import { AIMessage } from "@langchain/core/messages";
-import { GraphState } from "../../utils/state.js";
+import { GraphState, bindServerToken } from "../../utils/state.js";
 import type { ExecutionContext } from "../../utils/execution-context/index.js";
 import {
   generateEmailHash,
@@ -164,12 +164,14 @@ export async function tokenizeCard(
 
     return {
       private_tokenId: vProvisionedTokenID,
-      // Bind the token to this session/thread server-side (AISAST-10709). This
-      // is the trusted value used by all token-consuming/delete nodes; the
-      // internal private_tokenId is only a reference and is never sourced from
-      // client input. The serverTokenIdChannel reducer is deny-by-default, so
-      // once bound it cannot be overwritten by any later (client) value.
-      private_serverTokenId: vProvisionedTokenID,
+      // Bind the token to this session/thread server-side (AISAST-10709). The
+      // value is wrapped with the process-local server-provenance marker via
+      // bindServerToken so it passes the serverTokenIdChannel provenance gate;
+      // the reducer unwraps and stores the plain string. A client payload
+      // (input OR command.update interrupt-resume) cannot fabricate this
+      // wrapper, so this server write is the ONLY path that can set the binding.
+      // It is also deny-by-default: once bound it cannot be overwritten.
+      private_serverTokenId: bindServerToken(vProvisionedTokenID),
       // Non-sensitive UI flag: a provisioned card now exists for this thread
       // (AISAST-10711). The raw token id is NOT exposed to the client.
       cardActive: true,

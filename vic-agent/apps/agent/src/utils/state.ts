@@ -1,5 +1,6 @@
 import { Annotation } from "@langchain/langgraph";
 import { BaseMessage } from "@langchain/core/messages";
+import { randomUUID } from "crypto";
 import { MODE } from "./constant.js";
 
 /**
@@ -99,25 +100,97 @@ const tokenIdChannel = Annotation<string | null>({
 const SERVER_TOKEN_CLEAR_SENTINEL = "__CLEAR_SERVER_TOKEN__";
 
 /**
+ * Per-process, server-only provenance marker (AISAST-10709 round 3).
+ *
+ * Regenerated at module load for every agent process and held ONLY server-side:
+ * it is never exported to clients, never placed on any output channel, and never
+ * serialized into a checkpoint (the reducer stores only the unwrapped plain
+ * string — see below). Because the marker is an unguessable per-process random
+ * value, a client `command.update` payload cannot fabricate a wrapped value that
+ * the reducer will accept. This is what makes the server token write
+ * unforgeable even via the interrupt-resume (command.update) path, which writes
+ * straight through the channel reducer and bypasses InputStateAnnotation.
+ */
+const SERVER_TOKEN_PROVENANCE_MARKER = randomUUID();
+
+/**
+ * Wrapper shape produced by bindServerToken() and accepted by the
+ * serverTokenIdChannel reducer. Only objects whose __sp field strictly equals
+ * the process-local marker are honored; everything else (plain strings, the
+ * shape a client could send via command.update) is rejected.
+ */
+type ServerTokenBinding = {
+  __sp: string;
+  value: string;
+};
+
+/**
+ * Type guard: a value is a legitimate server-provenance binding only if it is an
+ * object carrying the exact per-process marker. A client payload cannot satisfy
+ * this because the marker is never serialized to the client.
+ */
+function isServerTokenBinding(value: unknown): value is ServerTokenBinding {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    (value as { __sp?: unknown }).__sp === SERVER_TOKEN_PROVENANCE_MARKER &&
+    typeof (value as { value?: unknown }).value === "string"
+  );
+}
+
+/**
+ * Server-only helper to wrap a provisioned token id with the process-local
+ * provenance marker. The ONLY supported way to write private_serverTokenId.
+ * Use it in tokenizeCard; the reducer unwraps it back to a plain string for
+ * storage so checkpoint serialization stays a plain string.
+ *
+ * The runtime value is the wrapped ServerTokenBinding object (detected by the
+ * reducer), but the return type is declared as `string` so it satisfies the
+ * node-return contract (typeof GraphState.State["private_serverTokenId"] is
+ * `string | null`). The cast is intentional and confined to this single,
+ * server-only, server-trusted call site.
+ */
+export function bindServerToken(tokenId: string): string {
+  return { __sp: SERVER_TOKEN_PROVENANCE_MARKER, value: tokenId } as unknown as string;
+}
+
+/**
  * Server-trusted, server-write-only token channel bound to this session/thread
  * (AISAST-10709).
  *
- * NEVER exposed to the client (not in OutputStateAnnotation) and never accepted
- * from client input. The reducer is deny-by-default: once a server token is
- * bound it is immutable for the life of the thread, so a client-supplied value
- * (even if one were wired in) can neither set nor overwrite it. The only way to
- * clear it is the explicit cleanup sentinel emitted by the delete-card cleanup
- * node. This is the ONLY token the delete/consume nodes act on (object-level
+ * NEVER exposed to the client (not in OutputStateAnnotation). The reducer is
+ * provenance-guarded AND deny-by-default:
+ *
+ *  - It accepts a new binding ONLY when the incoming value is wrapped with the
+ *    process-local server-provenance marker (via bindServerToken). The stored
+ *    value is the UNWRAPPED plain string, so reads (state.private_serverTokenId)
+ *    and checkpoint serialization see a plain `string`.
+ *  - Any unwrapped / plain incoming value — exactly what a client can place on
+ *    this channel through input OR through a command.update interrupt-resume —
+ *    is REJECTED (returns existing), except the explicit cleanup sentinel.
+ *  - Once bound, the binding is immutable for the life of the thread (a second
+ *    bind is ignored). The only way to clear it is the cleanup sentinel emitted
+ *    by the delete-card cleanup node.
+ *
+ * This is the ONLY token the delete/consume nodes act on (object-level
  * authorization, web-application-dsr 4.6(d)).
+ *
+ * The channel value type is `string | null` (what consumers read); the reducer
+ * input is widened to `unknown` because the write path supplies the wrapped
+ * binding object that the reducer unwraps.
  */
-const serverTokenIdChannel = Annotation<string | null>({
+const serverTokenIdChannel = Annotation<string | null, unknown>({
   reducer: (existing, incoming) => {
     if (incoming === undefined) return existing;
     // Explicit cleanup sentinel resets the binding (delete-card flow only).
     if (incoming === SERVER_TOKEN_CLEAR_SENTINEL) return null;
+    // Provenance gate: only a server-wrapped binding is honored. A plain string
+    // or any client-fabricated object (input or command.update) is rejected.
+    if (!isServerTokenBinding(incoming)) return existing;
     // Deny-by-default: once bound, the server binding is immutable.
     if (existing) return existing;
-    return incoming;
+    // Store the UNWRAPPED plain string so checkpoints stay plain strings.
+    return incoming.value;
   },
   default: () => null,
 });
