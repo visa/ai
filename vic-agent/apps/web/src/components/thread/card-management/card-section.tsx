@@ -5,7 +5,7 @@ import { DeleteCardDialog } from "./delete-card-dialog";
 import { type CardFormData } from "@/lib/validations/card";
 import { detectCardBrand, getLastFourDigits } from "@/lib/utils/card-utils";
 import { toast } from "sonner";
-import { clearStoredCard, getTokenId } from "@/lib/card-storage";
+import { clearStoredCard } from "@/lib/card-storage";
 import { encryptCardData } from "@/lib/card-encryption";
 import { useStreamContext } from "@/providers/Stream";
 
@@ -134,15 +134,13 @@ export function CardSection() {
   };
 
   const handleDeleteConfirm = () => {
-    // Get token ID from localStorage to send to agent
-    const tokenId = getTokenId();
-
-    // Send action to agent to trigger delete card subgraph
-    // Agent will call delete-token MCP API and signal UI to clear storage
+    // Send action to agent to trigger delete-card subgraph. The token ID is NOT
+    // sent from the client (AISAST-10711): the agent deletes the token bound to
+    // this thread's checkpointed server state (private_serverTokenId), enforced
+    // deny-by-default in deleteToken (AISAST-10709).
     stream.submit(
       {
         action: "delete-card", // Public action field
-        private_tokenId: tokenId, // Include token ID so agent can delete it
       },
       {
         streamMode: ["values"],

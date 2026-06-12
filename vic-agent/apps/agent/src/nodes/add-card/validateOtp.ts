@@ -49,14 +49,23 @@ export async function validateOtp(
     return {}; // Return empty state to preserve existing data
   }
 
+  // Deny-by-default: consume the server-bound token only (AISAST-10709).
+  const tokenId = state.private_serverTokenId;
+  if (!tokenId || (state.private_tokenId && state.private_tokenId !== tokenId)) {
+    return {
+      messages: [
+        new AIMessage({
+          content: "We could not verify this card for your session.",
+          additional_kwargs: { ui_only: true },
+        }),
+      ],
+    };
+  }
+
   try {
-    if (
-      !state.private_tokenId ||
-      !state.private_otpCode ||
-      !state.clientReferenceId
-    ) {
+    if (!state.private_otpCode || !state.clientReferenceId) {
       throw new Error(
-        "Missing required state data: tokenId, otpCode, or clientReferenceId"
+        "Missing required state data: otpCode or clientReferenceId"
       );
     }
 
@@ -83,7 +92,7 @@ export async function validateOtp(
     }
 
     const payload: Record<string, unknown> = {
-      vProvisionedTokenID: state.private_tokenId,
+      vProvisionedTokenID: tokenId,
       otpValue: state.private_otpCode,
       date: Math.floor(Date.now() / 1000).toString(), // EpochDateTime in UTC
       clientReferenceId: state.clientReferenceId,
@@ -98,7 +107,7 @@ export async function validateOtp(
     console.log("Calling validate-otp with payload");
 
     const { result, messages: toolMessages } = await context.validateOtp(
-      state.private_tokenId,
+      tokenId,
       payload
     );
 

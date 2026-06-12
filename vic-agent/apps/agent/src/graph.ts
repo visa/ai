@@ -413,7 +413,18 @@ if (process.env.VISA_MCP_BASE_URL) {
   isMcpInitialized = false;
 }
 
-// Compile the flattened graph
+// Compile the flattened graph.
+//
+// Object-level authorization for the destructive delete-card flow is enforced
+// in-node (deleteToken consumes the server-bound private_serverTokenId with a
+// deny-by-default mismatch guard, AISAST-10709). A graph-level
+// interruptBefore:[DELETE_TOKEN] confirmation gate is intentionally NOT added
+// here: the web client drives the delete-card flow with a single stream.submit
+// and has no wiring to resume a static graph-level interrupt (the
+// InterruptHandler only handles in-node interrupt() values such as
+// awaiting_otp). Adding the gate would pause before DELETE_TOKEN with no resume
+// path and silently break delete-card. The server-binding match is the
+// authorization control.
 const compiledGraph = workflow.compile({
   checkpointer,
   interruptBefore: [],

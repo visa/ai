@@ -44,15 +44,27 @@ export async function getDeviceAttestationOptions(
     return {}; // Return empty state to preserve existing data
   }
 
+  // Deny-by-default: consume the server-bound token only (AISAST-10709).
+  const tokenId = state.private_serverTokenId;
+  if (!tokenId || (state.private_tokenId && state.private_tokenId !== tokenId)) {
+    return {
+      messages: [
+        new AIMessage({
+          content: "We could not verify this card for your session.",
+          additional_kwargs: { ui_only: true },
+        }),
+      ],
+    };
+  }
+
   try {
     if (
-      !state.private_tokenId ||
       !state.private_vtsAuthenticationSessionData ||
       !state.email ||
       !state.clientReferenceId
     ) {
       throw new Error(
-        "Missing required state data: tokenId, VTS authentication data, email, or clientReferenceId"
+        "Missing required state data: VTS authentication data, email, or clientReferenceId"
       );
     }
 
@@ -80,7 +92,7 @@ export async function getDeviceAttestationOptions(
 
     // Build payload for get-device-attestation-options
     const payload: Record<string, unknown> = {
-      vProvisionedTokenID: state.private_tokenId,
+      vProvisionedTokenID: tokenId,
       dynamicData: {
         authenticationAmount: "0.00",
         currencyCode: "840",
@@ -107,7 +119,7 @@ export async function getDeviceAttestationOptions(
     console.log("Calling get-device-attestation-options with payload");
 
     const { result, messages: toolMessages } =
-      await context.getDeviceAttestationOptions(state.private_tokenId, payload);
+      await context.getDeviceAttestationOptions(tokenId, payload);
 
     console.log("Device attestation options retrieved successfully");
 

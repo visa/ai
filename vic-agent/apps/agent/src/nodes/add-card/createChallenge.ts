@@ -47,21 +47,33 @@ export async function createChallenge(
     return {}; // Return empty state to preserve existing data
   }
 
+  // Deny-by-default: consume the server-bound token only (AISAST-10709).
+  const tokenId = state.private_serverTokenId;
+  if (!tokenId || (state.private_tokenId && state.private_tokenId !== tokenId)) {
+    return {
+      messages: [
+        new AIMessage({
+          content: "We could not verify this card for your session.",
+          additional_kwargs: { ui_only: true },
+        }),
+      ],
+    };
+  }
+
   try {
     // Validate required state data
     if (
-      !state.private_tokenId ||
       !state.private_selectedValidationMethod?.identifier ||
       !state.clientReferenceId
     ) {
       throw new Error(
-        "Missing required state data: tokenId, selectedValidationMethod.identifier, or clientReferenceId"
+        "Missing required state data: selectedValidationMethod.identifier or clientReferenceId"
       );
     }
 
     // Build payload for submit-idv-step-up-method
     const payload: Record<string, unknown> = {
-      vProvisionedTokenID: state.private_tokenId,
+      vProvisionedTokenID: tokenId,
       stepUpRequestID: state.private_selectedValidationMethod.identifier,
       date: Math.floor(Date.now() / 1000).toString(), // EpochDateTime in UTC
       clientReferenceId: state.clientReferenceId,
@@ -76,7 +88,7 @@ export async function createChallenge(
     console.log("Calling submit-idv-step-up-method with payload");
 
     const { result, messages: toolMessages } =
-      await context.submitIdvStepUpMethod(state.private_tokenId, payload);
+      await context.submitIdvStepUpMethod(tokenId, payload);
 
     if (isCreateChallengeError(result)) {
       console.error(

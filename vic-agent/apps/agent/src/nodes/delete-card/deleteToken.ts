@@ -38,25 +38,39 @@ export async function deleteToken(
     };
   }
 
-  if (!state.private_tokenId) {
-    console.error("No token ID found in state, cannot delete");
+  // Deny-by-default object-level authorization (AISAST-10709): only the token
+  // the SERVER bound to this session/thread (private_serverTokenId, set by
+  // tokenizeCard) may be deleted. The internal private_tokenId is treated as an
+  // untrusted claim — it is no longer sourced from client input, but we still
+  // refuse if it disagrees with the server binding.
+  const boundTokenId = state.private_serverTokenId;
+  if (!boundTokenId) {
+    console.error("No server-bound token for this session; refusing delete");
     return {
       messages: [
         new AIMessage("No card found to delete. Please add a card first."),
       ],
     };
   }
+  // A mismatch means the caller is trying to delete a token they did not
+  // provision in this session -> refuse (do NOT delete the supplied id).
+  if (state.private_tokenId && state.private_tokenId !== boundTokenId) {
+    console.error("Token claim does not match session binding; refusing delete");
+    return {
+      messages: [
+        new AIMessage(
+          "We could not verify this card for your session, so no changes were made."
+        ),
+      ],
+    };
+  }
 
   try {
-    // Ownership/existence check before deletion: confirm the token is known and
-    // resolvable for this wallet via get-token-status. This prevents deleting an
-    // arbitrary token id that was not provisioned through this application.
-    // NOTE: the reference graph has no per-user identity, so this verifies the
-    // token belongs to the app's wallet (combined with the agent-backend API-key
-    // auth and per-session isolation that gate who can invoke this flow); true
-    // per-user object-level ownership would require an authenticated user model.
+    // Secondary existence/health check before deletion via get-token-status.
+    // The AUTHORIZATION decision is made above by the server-binding match;
+    // this only confirms the bound token is still resolvable.
     try {
-      await context.getTokenStatus(state.private_tokenId);
+      await context.getTokenStatus(boundTokenId);
     } catch (statusError) {
       console.error("Refusing delete: token status could not be verified");
       return {
@@ -69,7 +83,7 @@ export async function deleteToken(
     }
 
     const payload = {
-      vProvisionedTokenID: state.private_tokenId,
+      vProvisionedTokenID: boundTokenId,
       updateReason: {
         reasonCode: "CUSTOMER_CONFIRMED",
       },
@@ -79,7 +93,7 @@ export async function deleteToken(
     console.log("Calling delete-token");
 
     const { messages: toolMessages } = await context.deleteToken(
-      state.private_tokenId,
+      boundTokenId,
       payload
     );
 
@@ -92,6 +106,9 @@ export async function deleteToken(
     return {
       // Mark deletion as completed (idempotency flag)
       private_tokenDeleted: true,
+
+      // Non-sensitive UI flag: no provisioned card remains for this thread.
+      cardActive: false,
 
       // Increment deletion counter to signal UI (streams reliably)
       cardDeletionSignal: (state.cardDeletionSignal || 0) + 1,

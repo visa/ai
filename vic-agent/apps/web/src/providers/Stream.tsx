@@ -35,9 +35,10 @@ export type StateType = {
   messages: Message[];
   ui?: UIMessage[];
   isMcpConnected?: boolean;
-  // Output field exposed by the agent (renamed from private_tokenId; it is a
-  // non-sensitive token reference intentionally surfaced to the client).
-  tokenId?: string | null;
+  // Non-sensitive flag exposed by the agent: true when a provisioned card token
+  // exists server-side for this thread. The raw provisioned token ID is NEVER
+  // sent to the client (AISAST-10711); the UI renders "card active" from this.
+  cardActive?: boolean;
   validationMethods?: Array<{
     method: string;
     value: string;
@@ -66,7 +67,9 @@ const useTypedStream = useStream<
       ui?: (UIMessage | RemoveUIMessage)[] | UIMessage | RemoveUIMessage;
       action?: string | null;
       cardDeletionSignal?: number;
-      private_tokenId?: string | null;
+      // The raw provisioned token ID is no longer round-tripped through the
+      // client (AISAST-10711); the delete-card flow reads the token from the
+      // thread-scoped checkpointed server state instead.
       private_encryptedCardData?: string | null;
       email?: string | null;
     };

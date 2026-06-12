@@ -44,21 +44,33 @@ export async function deviceBinding(
     return {}; // Return empty state to preserve existing data
   }
 
+  // Deny-by-default: consume the server-bound token only (AISAST-10709).
+  const tokenId = state.private_serverTokenId;
+  if (!tokenId || (state.private_tokenId && state.private_tokenId !== tokenId)) {
+    return {
+      messages: [
+        new AIMessage({
+          content: "We could not verify this card for your session.",
+          additional_kwargs: { ui_only: true },
+        }),
+      ],
+    };
+  }
+
   try {
     // Validate required state data
     if (
-      !state.private_tokenId ||
       !state.private_vtsAuthenticationSessionData ||
       !state.clientReferenceId
     ) {
       throw new Error(
-        "Missing required state data: tokenId, VTS authentication data, or clientReferenceId"
+        "Missing required state data: VTS authentication data or clientReferenceId"
       );
     }
 
     // Build base payload for device-binding-request
     const payload: Record<string, unknown> = {
-      vProvisionedTokenID: state.private_tokenId,
+      vProvisionedTokenID: tokenId,
       clientReferenceId: state.clientReferenceId,
       platformType: "WEB",
       reasonCode: "DEVICE_BINDING",
@@ -106,7 +118,7 @@ export async function deviceBinding(
     console.log("Calling device-binding-request with payload");
 
     const { result, messages: toolMessages } =
-      await context.deviceBindingRequest(state.private_tokenId, payload);
+      await context.deviceBindingRequest(tokenId, payload);
 
     console.log("Device binding completed successfully");
 

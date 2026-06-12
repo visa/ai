@@ -45,13 +45,25 @@ export async function checkTokenStatus(
     return {}; // Return empty state to preserve existing data
   }
 
+  // Deny-by-default: consume the server-bound token only (AISAST-10709).
+  const tokenId = state.private_serverTokenId;
+  if (!tokenId || (state.private_tokenId && state.private_tokenId !== tokenId)) {
+    return {
+      messages: [
+        new AIMessage({
+          content: "We could not verify this card for your session.",
+          additional_kwargs: { ui_only: true },
+        }),
+      ],
+    };
+  }
+
   try {
     // Do not log the token id (sensitive payment-token reference).
     console.log("Calling get-token-status");
 
-    const { result, messages: toolMessages } = await context.getTokenStatus(
-      state.private_tokenId!
-    );
+    const { result, messages: toolMessages } =
+      await context.getTokenStatus(tokenId);
 
     if (isCheckTokenStatusError(result)) {
       console.error(

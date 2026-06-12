@@ -1,4 +1,7 @@
-import { GraphState } from "../../utils/state.js";
+import {
+  GraphState,
+  SERVER_TOKEN_CLEAR_SENTINEL,
+} from "../../utils/state.js";
 import { MODE } from "../../utils/constant.js";
 
 /**
@@ -36,6 +39,12 @@ export async function clearDeleteCardAction(
     // Clear ALL card-related state (except email)
     private_cardData: null,
     private_tokenId: null,
+    // Clear the server-trusted token binding via the explicit cleanup sentinel
+    // (the serverTokenIdChannel reducer is deny-by-default and only resets on
+    // this sentinel). AISAST-10709.
+    private_serverTokenId: SERVER_TOKEN_CLEAR_SENTINEL,
+    // Non-sensitive UI flag: no provisioned card remains for this thread.
+    cardActive: false,
     private_vtsAuthenticationSessionData: null,
     private_vtsRetryCount: 0,
     private_deviceAttestationOptions: null,

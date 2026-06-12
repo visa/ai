@@ -164,6 +164,15 @@ export async function tokenizeCard(
 
     return {
       private_tokenId: vProvisionedTokenID,
+      // Bind the token to this session/thread server-side (AISAST-10709). This
+      // is the trusted value used by all token-consuming/delete nodes; the
+      // internal private_tokenId is only a reference and is never sourced from
+      // client input. The serverTokenIdChannel reducer is deny-by-default, so
+      // once bound it cannot be overwritten by any later (client) value.
+      private_serverTokenId: vProvisionedTokenID,
+      // Non-sensitive UI flag: a provisioned card now exists for this thread
+      // (AISAST-10711). The raw token id is NOT exposed to the client.
+      cardActive: true,
       // Purge sensitive card data from state after successful tokenization so
       // PAN/CVV (Sensitive Authentication Data) is not retained in the
       // checkpoint post-authorization (mirrors the error path below).

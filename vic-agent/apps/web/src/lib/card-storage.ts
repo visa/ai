@@ -5,15 +5,21 @@
  * - Raw card data (PAN, CVV, expiry) is NEVER persisted. It is encrypted
  *   client-side (see card-encryption.ts) and submitted directly to the agent
  *   for tokenization; the cleartext is held only transiently in memory.
- * - Only non-sensitive display data (last four, brand, expiry, cardholder
- *   name) and the provisioned token ID are stored in localStorage.
+ * - The provisioned token ID is NO LONGER stored client-side (AISAST-10711).
+ *   It stays in the thread-scoped checkpointed server state and never reaches
+ *   the browser. Only non-sensitive display data (last four, brand, expiry,
+ *   cardholder name) is kept in localStorage.
  * - CVV / Sensitive Authentication Data is never stored under any key.
+ *
+ * The token-ID helpers below remain only to evict any token persisted by an
+ * older build; new flows do not write the token key.
  */
 
 /**
- * Clear the stored card credential (token ID).
- * Should be called when the user explicitly removes the card. Display data
- * (last four, etc.) is managed separately by the card UI components.
+ * Clear any stale card credential (legacy token ID key) from localStorage.
+ * Called when the user explicitly removes the card / on the deletion signal.
+ * Display data (last four, etc.) is managed separately by the card UI
+ * components.
  */
 export function clearStoredCard(): void {
   try {

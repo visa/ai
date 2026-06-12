@@ -33,7 +33,6 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { GitHubSVG } from "../icons/github";
-import { getTokenId, storeTokenId } from "@/lib/card-storage";
 import { getClientDeviceId, getClientReferenceId } from "@/lib/vts-utils";
 import { InterruptHandler } from "./interrupt-handler";
 
@@ -160,14 +159,10 @@ export function Thread() {
     prevMessageLength.current = messages.length;
   }, [messages]);
 
-  // Listen for token ID from agent (output field `tokenId`) and save to localStorage
-  useEffect(() => {
-    const receivedTokenId = stream.values?.tokenId;
-    if (receivedTokenId && receivedTokenId !== getTokenId()) {
-      console.log("[Thread] Storing token id from agent");
-      storeTokenId(receivedTokenId);
-    }
-  }, [stream.values?.tokenId]);
+  // The raw provisioned token ID is no longer exposed to the client
+  // (AISAST-10711). The agent now only emits a non-sensitive `cardActive`
+  // boolean; the token stays in the thread-scoped checkpointed server state and
+  // never reaches localStorage.
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -188,24 +183,16 @@ export function Thread() {
     };
 
     // Get stored data
-    const tokenId = getTokenId();
     const currentThreadId = threadId || "new";
     const isFirstMessageForThread =
       cardDataSentForThread.current !== currentThreadId;
 
     // Only send data on first message of thread.
-    // Note: raw card data is never resent here. It is encrypted and submitted
-    // once at enrollment (card-data-prompt / card-section); thereafter only the
-    // provisioned token ID (a sensitive Visa-Restricted payment-token reference)
-    // is needed to identify the enrolled card.
+    // Note: raw card data is never resent here. The provisioned token ID is
+    // also never sent from the client (AISAST-10711): it lives only in the
+    // thread-scoped checkpointed server state, so the enrolled card is
+    // identified server-side without any client-held token reference.
     if (isFirstMessageForThread) {
-      // Send token ID if available
-      if (tokenId) {
-        stateUpdate.private_tokenId = tokenId;
-        // Do not log the provisioned token id (sensitive payment-token reference).
-        console.log("[Thread] Sending token id");
-      }
-
       // Send VTS IDs
       try {
         stateUpdate.private_vtsClientDeviceId = getClientDeviceId();
