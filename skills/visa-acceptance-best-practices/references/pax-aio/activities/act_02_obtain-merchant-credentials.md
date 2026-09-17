@@ -393,7 +393,7 @@ If the build fails, verify import statements use correct package paths:
 
 ## Troubleshooting
 
-See `references/troubleshooting.md#merchant-credentials` for credential and initialization errors, including the critical `ACCESSORY_NOT_WHITELISTED` issue caused by missing `.terminalParameters()` in `UiConfiguration`.
+See `references/pax-aio/troubleshooting.md#merchant-credentials` for credential and initialization errors, including the critical `ACCESSORY_NOT_WHITELISTED` issue caused by missing `.terminalParameters()` in `UiConfiguration`.
 
 ## Acceptance Criteria
 
@@ -429,7 +429,7 @@ Working directory: <project root>
 
 Read these files before writing any code:
 1. `project-plan.md` (project root) — contains project context and GATE 2 implementation notes
-2. `references/activities/act_02_obtain-merchant-credentials.md` — the activity definition (full implementation guidance)
+2. `references/pax-aio/activities/act_02_obtain-merchant-credentials.md` — the activity definition (full implementation guidance)
 
 Credential method: <CREDENTIAL_METHOD>
 - Merchant ID: <MERCHANT_ID>
@@ -454,7 +454,7 @@ Use `project-plan.md` for project-specific metadata (package, language, file pat
 Follow Step 1 of the activity file based on the `CREDENTIAL_METHOD` above.
 
 Critical constraints:
-1. Use `Properties().load()` to read `local.properties` — NEVER use `project.findProperty()`. See `references/troubleshooting.md#sdk-build`.
+1. Use `Properties().load()` to read `local.properties` — NEVER use `project.findProperty()`. See `references/pax-aio/troubleshooting.md#sdk-build`.
 2. **EVERY `UiConfiguration.Builder()` MUST include `.terminalParameters()`** — even if terminal parameters were passed to `MposUi.create()`. Without this, the SDK silently resets to MOCK mode when the configuration is applied, causing "terminal not whitelisted" errors.
 
 <!-- REC-07 -->
@@ -509,7 +509,7 @@ if [ -n "$PAYMENT_APP_KT" ]; then
     echo "        Build will fail with 'Unresolved reference: setConfiguration'."
     echo "Fix:    Replace  mposUi.setConfiguration(uiConfiguration)"
     echo "        With     mposUi.configuration = uiConfiguration"
-    echo "Reference: references/troubleshooting.md#sdk-build"
+    echo "Reference: references/pax-aio/troubleshooting.md#sdk-build"
     exit 1
   fi
   echo "OK: Kotlin property syntax (mposUi.configuration = ...) used correctly in $PAYMENT_APP_KT"

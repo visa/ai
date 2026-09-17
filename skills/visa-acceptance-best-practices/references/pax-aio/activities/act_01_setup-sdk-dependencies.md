@@ -2,7 +2,7 @@
 
 Configure Gradle files and the Android project so the CyberSource PAX All-in-One SDK is available in the build.
 
-**Reference:** [PAX AIO Get Started](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-get-started-intro.md) (Gradle, Manifest, ProGuard), `references/troubleshooting.md#network-access`, `references/troubleshooting.md#sdk-build`
+**Reference:** [PAX AIO Get Started](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-get-started-intro.md) (Gradle, Manifest, ProGuard), `references/pax-aio/troubleshooting.md#network-access`, `references/pax-aio/troubleshooting.md#sdk-build`
 
 ## Critical Rules (NEVER violate these)
 
@@ -20,7 +20,7 @@ Before starting, confirm the developer has:
    have passed before this activity runs. Step 1c confirms that the Gradle wrapper, Google
    Maven, `repo.visa.com`, and SSL certificates all work. If a build fails with network
    errors during this activity, re-run the Step 1c checks and apply the appropriate
-   remediation from `references/troubleshooting.md#network-access`.
+   remediation from `references/pax-aio/troubleshooting.md#network-access`.
 4. An existing Android project, or willingness to create a new one
 
 ## Workflow
@@ -61,7 +61,7 @@ Fetch the code from [PAX AIO Get Started](https://developer.visaacceptance.com/d
 ### Step 2: Configure Project build.gradle
 
 Open the root `build.gradle` (or `build.gradle.kts`). Check the version requirements in
-`references/constants/pax-sdk-requirements.md` and the `required_upgrades` section of `project-plan.md`.
+`references/pax-aio/constants/pax-sdk-requirements.md` and the `required_upgrades` section of `project-plan.md`.
 
 **Version rules (CRITICAL — never downgrade, never change without approval):**
 - If the project's AGP version is **already >= the minimum**, keep it as-is.
@@ -104,7 +104,7 @@ Check `project-plan.md` for `required_upgrades`. Only modify versions that appea
 android {
     defaultConfig {
         // Only change minSdk if it appears in required_upgrades.
-        // If current minSdk >= MIN_SDK_VERSION (see references/constants/pax-sdk-requirements.md),
+        // If current minSdk >= MIN_SDK_VERSION (see references/pax-aio/constants/pax-sdk-requirements.md),
         // leave it unchanged.
         minSdk = <target from required_upgrades, or keep existing>
     }
@@ -201,7 +201,7 @@ If obfuscation is enabled, also verify the release build:
 
 ## Troubleshooting
 
-If the build fails, refer to `references/troubleshooting.md#sdk-build` for detailed diagnosis and fixes.
+If the build fails, refer to `references/pax-aio/troubleshooting.md#sdk-build` for detailed diagnosis and fixes.
 
 **Reminder:** NEVER comment out PAX dependencies or revert `settings.gradle` as a workaround. Always fix the root cause.
 
@@ -211,12 +211,12 @@ This activity is complete when all of the following are true:
 
 1. SDK version was queried from the repository (Step 0) — not hardcoded blindly
 2. `settings.gradle` includes the Visa Maven repository (`https://repo.visa.com/mpos-releases/`) with `exclusiveContent` filtering for `io.payworks`
-3. Project `build.gradle` declares Kotlin and AGP at or above the minimums in `references/constants/pax-sdk-requirements.md`
+3. Project `build.gradle` declares Kotlin and AGP at or above the minimums in `references/pax-aio/constants/pax-sdk-requirements.md`
 4. **No version downgrades** — project versions that already meet or exceed minimums are unchanged
 5. Only versions listed in `required_upgrades` (from `project-plan.md`) **and explicitly approved by the developer** were modified
 6. **No unapproved version changes** — any version change discovered during build-error resolution was surfaced to the developer for approval before being applied
 7. Module `build.gradle` includes:
-   - `minSdk` >= `MIN_SDK_VERSION` (see `references/constants/pax-sdk-requirements.md`)
+   - `minSdk` >= `MIN_SDK_VERSION` (see `references/pax-aio/constants/pax-sdk-requirements.md`)
    - Packaging exclusions for `META-INF/*`, `LICENSE.txt`, and `asm-license.txt`
    - Java >= `REQUIRED_JAVA_VERSION` compatibility (`sourceCompatibility`, `targetCompatibility`, `jvmTarget`)
    - `matchingFallbacks` in the `debug` build type pointing to `release`
@@ -255,8 +255,8 @@ repository manually.
 
 Read these files before writing any code:
 1. `project-plan.md` (in the project root) — contains project context, `required_upgrades`, and GATE 1 implementation notes
-2. `references/activities/act_01_setup-sdk-dependencies.md` — the activity definition (full implementation guidance)
-3. `references/constants/pax-sdk-requirements.md` — version minimums and SDK constants
+2. `references/pax-aio/activities/act_01_setup-sdk-dependencies.md` — the activity definition (full implementation guidance)
+3. `references/pax-aio/constants/pax-sdk-requirements.md` — version minimums and SDK constants
 
 ## Your task
 
@@ -285,7 +285,7 @@ minimise first-build time:
 ```
 
 - If BUILD SUCCESSFUL: you are done.
-- If BUILD FAILED: diagnose using `references/troubleshooting.md#sdk-build`, fix, rebuild.
+- If BUILD FAILED: diagnose using `references/pax-aio/troubleshooting.md#sdk-build`, fix, rebuild.
   Repeat until the build passes. Do NOT report PASS until the build succeeds.
 
 If `proguard_enabled = true`, also verify the release build:

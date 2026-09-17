@@ -316,7 +316,7 @@ Device serial: <DEVICE_SERIAL>
 
 ## Inputs
 
-Read: `references/activities/act_10_verify-payment-screen.md`
+Read: `references/pax-aio/activities/act_10_verify-payment-screen.md`
 Read: `project-plan.md` — for `package` and `gate_skip_decisions`
 
 ## Your task

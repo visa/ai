@@ -364,7 +364,7 @@ If the build fails:
 
 ## Troubleshooting
 
-See `references/troubleshooting.md#tipping` for on-reader and on-receipt tipping errors (missing imports, parameter mismatches, autoCapture, tip adjust limits).
+See `references/pax-aio/troubleshooting.md#tipping` for on-reader and on-receipt tipping errors (missing imports, parameter mismatches, autoCapture, tip adjust limits).
 
 ---
 
@@ -429,7 +429,7 @@ Working directory: <project root>
 
 Read these files before writing any code:
 1. `project-plan.md` (project root) — contains project context and GATE 5 implementation notes (tipping type, entry mode, config)
-2. `references/activities/act_05_implement-tipping.md` — the activity definition (full implementation guidance)
+2. `references/pax-aio/activities/act_05_implement-tipping.md` — the activity definition (full implementation guidance)
 
 Tipping type selected: <TIPPING_TYPE>
 

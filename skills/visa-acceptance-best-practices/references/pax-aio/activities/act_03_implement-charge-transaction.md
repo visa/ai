@@ -284,7 +284,7 @@ If the build fails:
 
 ## Troubleshooting
 
-See `references/troubleshooting.md#common` for charge-related errors (Currency import, MposUi init guard, getLatestTransaction null, user cancellation).
+See `references/pax-aio/troubleshooting.md#common` for charge-related errors (Currency import, MposUi init guard, getLatestTransaction null, user cancellation).
 
 ## Acceptance Criteria
 
@@ -331,7 +331,7 @@ source. If `project-plan.md` specifies a `payment_amount_source` expression (e.g
 
 Read these files before writing any code:
 1. `project-plan.md` (project root) — contains project context, `payment_entry_points`, and GATE 3 implementation notes
-2. `references/activities/act_03_implement-charge-transaction.md` — the activity definition (full implementation guidance)
+2. `references/pax-aio/activities/act_03_implement-charge-transaction.md` — the activity definition (full implementation guidance)
 
 ## Your task
 

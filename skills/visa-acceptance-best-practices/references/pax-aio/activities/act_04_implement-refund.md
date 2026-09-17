@@ -252,7 +252,7 @@ This check is binary. Do NOT report success and move on — fix the wiring, then
 
 ## Troubleshooting
 
-See `references/troubleshooting.md#refund` for refund-specific errors (null mposUi, invalid identifiers, amount exceeds, TMS, ProGuard).
+See `references/pax-aio/troubleshooting.md#refund` for refund-specific errors (null mposUi, invalid identifiers, amount exceeds, TMS, ProGuard).
 
 ## Acceptance Criteria
 
@@ -288,7 +288,7 @@ Working directory: <project root>
 
 Read these files before writing any code:
 1. `project-plan.md` (project root) — contains project context, `payment_entry_points`, and GATE 4 implementation notes
-2. `references/activities/act_04_implement-refund.md` — the activity definition (full implementation guidance)
+2. `references/pax-aio/activities/act_04_implement-refund.md` — the activity definition (full implementation guidance)
 
 ## Your task
 

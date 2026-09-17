@@ -19,7 +19,12 @@ Best practices and integration guide for the Visa Developer Platform (VDP) and V
 
 ### visa-acceptance-best-practices
 
-Best practices and integration guide for Visa Acceptance payment processing.
+Best practices and integration guide for Visa Acceptance payment processing. Two fully automated, end-to-end PAX terminal integration pathways are supported:
+
+- **PAX All-in-One (AIO)** — The POS app runs directly on the PAX terminal as an Android APK. The SDK is embedded in your Android project. Best when you own the terminal hardware and want a single-device solution. 10 build-gated activities.
+- **PAX Semi-Integrated (SI)** — Your POS system (any platform — Java, Node.js, Python, .NET, Go) communicates with the PAX terminal over the network via WebSocket (local mode) or HTTPS (cloud mode). Best when the POS runs on separate hardware. 7 build-gated activities.
+
+The skill reads from [developer.visaacceptance.com/llms.txt](https://developer.visaacceptance.com/llms.txt) as the primary documentation source at integration time. Local reference files only contain corrections and supplements not available in the official documentation.
 
 **Use when:**
 
