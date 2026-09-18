@@ -30,6 +30,16 @@ Best practices and integration guide for Visa Acceptance payment processing.
 - Working with digital commerce (Click to Pay, Unified Checkout)
 - Managing platform services (boarding, webhooks, security keys)
 
+### affixio-action-governance
+
+Host-side AffixIO ACTION allow/deny for agent spend and privileged tool use in VIC flows.
+
+**Use when:**
+
+- An agent is about to check out or create a purchase instruction
+- You need a signed yes/no before pay or a privileged MCP tool
+- You want PII to stay on the host (not person/age/KYC)
+
 ## Installation
 
 You can install the skills repository using NPX:
