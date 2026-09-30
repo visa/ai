@@ -104,7 +104,7 @@ See `workflow.md` Step 1b for the full approval flow.
 In workflow, activity, and troubleshooting documents, refer to this file:
 
 ```
-See `references/constants/pax-sdk-requirements.md` for current minimum versions.
+See `references/pax-aio/constants/pax-sdk-requirements.md` for current minimum versions.
 ```
 
 Do NOT hardcode version numbers in implementation logic. Instead, instruct agents to:

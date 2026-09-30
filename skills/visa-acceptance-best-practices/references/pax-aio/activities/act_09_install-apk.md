@@ -151,7 +151,7 @@ On success, respond clearly with:
 
 When installation fails, preserve the raw adb failure output when possible and explain likely causes.
 
-See `references/troubleshooting.md#install-apk` for all APK installation failure scenarios (adb errors, device states, PAX A920 quirks, install conflicts).
+See `references/pax-aio/troubleshooting.md#install-apk` for all APK installation failure scenarios (adb errors, device states, PAX A920 quirks, install conflicts).
 
 ## Response style
 
@@ -182,7 +182,7 @@ contains the complete PAX SDK integration.
 
 ## Inputs
 
-Read: `references/activities/act_09_install-apk.md`
+Read: `references/pax-aio/activities/act_09_install-apk.md`
 Read: [PAX AIO Get Started](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-get-started-intro.md) (Installing Your Application on Debug PAX Devices section)
 
 ## Your task

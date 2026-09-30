@@ -3,7 +3,7 @@
 Analyse the Android project and produce a concise, project-specific implementation plan.
 Do NOT implement anything. Do NOT write code snippets in the plan.
 
-**Reference:** `references/constants/pax-sdk-requirements.md`, [PAX AIO Get Started](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-get-started-intro.md) (Gradle configuration)
+**Reference:** `references/pax-aio/constants/pax-sdk-requirements.md`, [PAX AIO Get Started](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-get-started-intro.md) (Gradle configuration)
 
 ## Critical Rules (NEVER violate these)
 
@@ -12,7 +12,7 @@ Do NOT implement anything. Do NOT write code snippets in the plan.
 3. **NEVER downgrade versions** — if the project already meets or exceeds a minimum, do NOT include it in `required_upgrades`.
 4. **NEVER stop at the first payment screen** — enumerate ALL payment entry points.
 5. **NEVER mark a gate as `skip` for partial implementations** — if the integration is incomplete on any screen, mark `run`.
-6. **NEVER hardcode constants** — read all version minimums from `references/constants/pax-sdk-requirements.md`.
+6. **NEVER hardcode constants** — read all version minimums from `references/pax-aio/constants/pax-sdk-requirements.md`.
 
 ## Agent Prompt Template
 
@@ -40,7 +40,7 @@ Scan these files and extract the facts below:
 - All `.java` and `.kt` files under `app/src/main/java/`
 
 **Also read the version requirements:**
-- `references/constants/pax-sdk-requirements.md`
+- `references/pax-aio/constants/pax-sdk-requirements.md`
 
 Use these explicit detection patterns to extract current project versions:
 
@@ -100,7 +100,7 @@ pre_auth_capture_requested: # true | false — true if PRIMARY = pre_auth_captur
 offline_requested:          # true | false — true if PRIMARY = offline OR Q7d = Yes
 
 # Version upgrade analysis
-# Compare detected versions against references/constants/pax-sdk-requirements.md.
+# Compare detected versions against references/pax-aio/constants/pax-sdk-requirements.md.
 # Only list upgrades where the project is BELOW the minimum. If the project
 # already meets or exceeds a minimum, do NOT include it here.
 required_upgrades:          # YAML list — empty [] if no upgrades needed, e.g.:
@@ -260,7 +260,7 @@ marked `run` — the implementation agent will detect and preserve existing work
 
 ### 3. Detect known issues and note required adaptations
 
-Read `references/constants/pax-sdk-requirements.md` for minimum version values.
+Read `references/pax-aio/constants/pax-sdk-requirements.md` for minimum version values.
 Compare the detected project versions against those constants and populate `required_upgrades`.
 
 Based on the project context, note which of these apply:
@@ -282,7 +282,7 @@ Based on the project context, note which of these apply:
 
 **Version upgrade decisions** (populate `required_upgrades` in project-plan.md):
 
-Apply the rules from `references/constants/pax-sdk-requirements.md`. For each component, compare
+Apply the rules from `references/pax-aio/constants/pax-sdk-requirements.md`. For each component, compare
 the detected project version against the minimum. Only add to `required_upgrades` if the
 project is BELOW the minimum. Never downgrade a version that already meets the requirement.
 

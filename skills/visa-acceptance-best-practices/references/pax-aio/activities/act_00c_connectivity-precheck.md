@@ -4,7 +4,7 @@ Verify that the developer's machine can reach every external resource that Gate 
 need during dependency resolution. Detecting proxy, SSL-interception, or firewall issues
 **now** avoids slow, repeated build failures later.
 
-**Reference:** `references/troubleshooting.md#network-access`
+**Reference:** `references/pax-aio/troubleshooting.md#network-access`
 
 ## Critical Rules (NEVER violate these)
 
@@ -187,7 +187,7 @@ If they still fail, present results again and ask the same question.
 
 ## Remediations (only when developer chooses "Fix it for me")
 
-Refer to `references/troubleshooting.md#network-access` for the full escalation sequence.
+Refer to `references/pax-aio/troubleshooting.md#network-access` for the full escalation sequence.
 The abbreviated decision tree is:
 
 ### Remediation A — SSL certificate error (corporate MITM / SSL inspection)
@@ -271,7 +271,7 @@ The Visa repository may be behind a corporate mirror (Artifactory/Nexus).
 3. If confirmed, update the project plan to use the mirror URL instead of
    `repo.visa.com` in the `settings.gradle` `exclusiveContent` block.
 
-4. If no mirror exists, ask the developer per `references/troubleshooting.md#network-access` Approach D.
+4. If no mirror exists, ask the developer per `references/pax-aio/troubleshooting.md#network-access` Approach D.
 
 ### Remediation D — Unknown failure
 
@@ -307,7 +307,7 @@ will attempt to regenerate it using the system-installed Gradle.
 2. Determine the target Gradle version. Read `gradle/wrapper/gradle-wrapper.properties`
    to find the intended `distributionUrl`. If the properties file specifies a version,
    use that. Otherwise, use the version from `required_upgrades` in `project-plan.md`,
-   or fall back to `MIN_GRADLE_VERSION` from `references/constants/pax-sdk-requirements.md`.
+   or fall back to `MIN_GRADLE_VERSION` from `references/pax-aio/constants/pax-sdk-requirements.md`.
 
 3. **Before regenerating, ask the developer for approval** of the distribution URL:
 

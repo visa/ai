@@ -424,7 +424,7 @@ grep -rn "CAPTURE_TRANSACTION" app/src --include="*.kt" --include="*.java" \
 
 ## Troubleshooting
 
-See `references/troubleshooting.md#capture` for capture-specific errors (amount exceeds, already captured, expired auth, cashback not allowed, ProGuard).
+See `references/pax-aio/troubleshooting.md#capture` for capture-specific errors (amount exceeds, already captured, expired auth, cashback not allowed, ProGuard).
 
 ## Acceptance Criteria
 
@@ -473,7 +473,7 @@ Gate 6.
 
 Read these two files before writing any code:
 1. `project-plan.md` (project root) — contains project context and payment entry points
-2. `references/activities/act_07_implement-capture.md`
+2. `references/pax-aio/activities/act_07_implement-capture.md`
 
 Also read for API reference:
 3. Fetch [PAX AIO Payment Services](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-payment-txn-intro.md) (Capture section)

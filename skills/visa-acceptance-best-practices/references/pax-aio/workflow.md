@@ -45,25 +45,25 @@ developed from real integration testing experience and environment-specific guid
 
 | File | Contents |
 |------|----------|
-| `references/constants/pax-sdk-requirements.md` | **Version constants** — single source of truth for all minimum version requirements |
+| `references/pax-aio/constants/pax-sdk-requirements.md` | **Version constants** — single source of truth for all minimum version requirements |
 | `troubleshooting.md` | All integration-testing troubleshooting in one file — use the in-file **Topics** index and anchors: network access (`#network-access`), common errors (`#common`), SDK build (`#sdk-build`), merchant credentials (`#merchant-credentials`), refund (`#refund`), tipping (`#tipping`), pre-authorization (`#pre-authorization`), capture (`#capture`), offline transactions (`#offline-transactions`), install APK (`#install-apk`), verify diagnostics (`#verify-diagnostics`) |
 
-### Activity files (`references/activities/`)
+### Activity files (`references/pax-aio/activities/`)
 
 | Gate | Activity file | Description |
 |------|--------------|-------------|
-| Planning | `references/activities/act_00_planning.md` | Project analysis and plan generation |
-| Pre-Check | `references/activities/act_00c_connectivity-precheck.md` | Network connectivity validation |
-| Gate 1 | `references/activities/act_01_setup-sdk-dependencies.md` | SDK Gradle dependencies |
-| Gate 2 | `references/activities/act_02_obtain-merchant-credentials.md` | Merchant config and MposUi init |
-| Gate 3 | `references/activities/act_03_implement-charge-transaction.md` | Charge transaction |
-| Gate 4 | `references/activities/act_04_implement-refund.md` | Refund transaction |
-| Gate 5 | `references/activities/act_05_implement-tipping.md` | Tipping functionality |
-| Gate 6 | `references/activities/act_06_implement-pre-authorization.md` | Pre-authorization |
-| Gate 7 | `references/activities/act_07_implement-capture.md` | Capture transaction |
-| Gate 8 | `references/activities/act_08_implement-offline-transactions.md` | Offline transactions |
-| Gate 9 | `references/activities/act_09_install-apk.md` | APK installation on terminal |
-| Gate 10 | `references/activities/act_10_verify-payment-screen.md` | Interactive transaction verification |
+| Planning | `references/pax-aio/activities/act_00_planning.md` | Project analysis and plan generation |
+| Pre-Check | `references/pax-aio/activities/act_00c_connectivity-precheck.md` | Network connectivity validation |
+| Gate 1 | `references/pax-aio/activities/act_01_setup-sdk-dependencies.md` | SDK Gradle dependencies |
+| Gate 2 | `references/pax-aio/activities/act_02_obtain-merchant-credentials.md` | Merchant config and MposUi init |
+| Gate 3 | `references/pax-aio/activities/act_03_implement-charge-transaction.md` | Charge transaction |
+| Gate 4 | `references/pax-aio/activities/act_04_implement-refund.md` | Refund transaction |
+| Gate 5 | `references/pax-aio/activities/act_05_implement-tipping.md` | Tipping functionality |
+| Gate 6 | `references/pax-aio/activities/act_06_implement-pre-authorization.md` | Pre-authorization |
+| Gate 7 | `references/pax-aio/activities/act_07_implement-capture.md` | Capture transaction |
+| Gate 8 | `references/pax-aio/activities/act_08_implement-offline-transactions.md` | Offline transactions |
+| Gate 9 | `references/pax-aio/activities/act_09_install-apk.md` | APK installation on terminal |
+| Gate 10 | `references/pax-aio/activities/act_10_verify-payment-screen.md` | Interactive transaction verification |
 
 Each activity file contains:
 - Critical Rules, Prerequisites, Workflow steps, Acceptance Criteria
@@ -602,7 +602,7 @@ gate_skip_decisions:
 project and produce a concrete implementation plan. The plan will be used by all
 subsequent implementation agents.
 
-**Activity file:** `references/activities/act_00_planning.md`
+**Activity file:** `references/pax-aio/activities/act_00_planning.md`
 
 Read the Agent Prompt Template from that file and inject these workflow variables:
 - `<project root>` — current working directory
@@ -633,7 +633,7 @@ approval. This applies to AGP, Kotlin, Gradle wrapper, Java, minSdk, compileSdk,
 any other version in the build configuration. Even during gate execution, if a build
 error suggests a version change as a fix, the implementation agent MUST surface it
 to the developer and get consent before applying it. See
-`references/constants/pax-sdk-requirements.md` § Required Upgrade Consent Protocol.
+`references/pax-aio/constants/pax-sdk-requirements.md` § Required Upgrade Consent Protocol.
 
 Before executing any implementation gate, present the plan to the developer for approval.
 This is the single highest-value checkpoint — catching mistakes here costs nothing because
@@ -692,7 +692,7 @@ no code has been written yet.
 **Purpose:** Verify that the developer's machine can reach every external resource that
 Gate 1 will need during dependency resolution.
 
-**Activity file:** `references/activities/act_00c_connectivity-precheck.md`
+**Activity file:** `references/pax-aio/activities/act_00c_connectivity-precheck.md`
 
 Follow the full procedure in that activity file. The key outcomes are:
 - `SELECTED_SDK_VERSION` is finalized (either resolved as latest, or user-chosen version confirmed)
@@ -713,7 +713,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 1 — SDK Dependencies
 
-**Activity:** `references/activities/act_01_setup-sdk-dependencies.md`
+**Activity:** `references/pax-aio/activities/act_01_setup-sdk-dependencies.md`
 **Skip if:** `gate_1_sdk_deps = skip` in `project-plan.md`
 
 **Variables to inject:**
@@ -724,7 +724,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 2 — Merchant Credentials and MposUi
 
-**Activity:** `references/activities/act_02_obtain-merchant-credentials.md`
+**Activity:** `references/pax-aio/activities/act_02_obtain-merchant-credentials.md`
 **Skip if:** `gate_2_merchant_config = skip` in `project-plan.md`
 
 **Variables to inject:**
@@ -737,7 +737,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 3 — Charge Transaction
 
-**Activity:** `references/activities/act_03_implement-charge-transaction.md`
+**Activity:** `references/pax-aio/activities/act_03_implement-charge-transaction.md`
 **Skip if:** `gate_3_charge = skip | declined` in `project-plan.md`
 
 **Variables to inject:**
@@ -749,7 +749,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 4 — Refund Transactions
 
-**Activity:** `references/activities/act_04_implement-refund.md`
+**Activity:** `references/pax-aio/activities/act_04_implement-refund.md`
 **Skip if:** `gate_4_refund = skip | declined` in `project-plan.md`
 
 **Variables to inject:**
@@ -759,7 +759,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 5 — Tipping
 
-**Activity:** `references/activities/act_05_implement-tipping.md`
+**Activity:** `references/pax-aio/activities/act_05_implement-tipping.md`
 **Skip if:** `gate_5_tipping = skip | declined` in `project-plan.md`
 
 **Variables to inject:**
@@ -773,7 +773,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 6 — Pre-Authorization Transaction
 
-**Activity:** `references/activities/act_06_implement-pre-authorization.md`
+**Activity:** `references/pax-aio/activities/act_06_implement-pre-authorization.md`
 **Skip if:** `gate_6_pre_auth = skip | declined` in `project-plan.md`
 
 **Variables to inject:**
@@ -785,7 +785,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 7 — Capture Transaction
 
-**Activity:** `references/activities/act_07_implement-capture.md`
+**Activity:** `references/pax-aio/activities/act_07_implement-capture.md`
 **Skip if:** `gate_7_capture = skip | declined` in `project-plan.md`
 
 **Variables to inject:**
@@ -797,7 +797,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 8 — Offline Transactions
 
-**Activity:** `references/activities/act_08_implement-offline-transactions.md`
+**Activity:** `references/pax-aio/activities/act_08_implement-offline-transactions.md`
 **Skip if:** `gate_8_offline = skip | declined` in `project-plan.md`
 
 **Variables to inject:**
@@ -811,7 +811,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 9 — APK Installation
 
-**Activity:** `references/activities/act_09_install-apk.md`
+**Activity:** `references/pax-aio/activities/act_09_install-apk.md`
 **Skip if:** Q2 = "No / Not yet" (no terminal connected)
 
 > **Runs after all implementation gates.** Gate 9's skip condition is Q2 only — never
@@ -825,7 +825,7 @@ section — read it, inject the variables listed below, and spawn the agent.
 
 ### Gate 10 — Interactive Transaction Verification
 
-**Activity:** `references/activities/act_10_verify-payment-screen.md`
+**Activity:** `references/pax-aio/activities/act_10_verify-payment-screen.md`
 **Skip if:** Q2 = "No / Not yet" (no terminal connected)
 
 > Gate 10 is independent of `gate_skip_decisions` — like Gate 9, governed by Q2 only.

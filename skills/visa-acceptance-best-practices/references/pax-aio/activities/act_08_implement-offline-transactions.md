@@ -322,7 +322,7 @@ private void processOfflineRefund(String transactionIdentifier) {
 
 Run `./gradlew assembleDebug` and fix any errors.
 
-Common failures: See `references/troubleshooting.md#offline-transactions` for offline-specific errors (SDK method names, EMV amount errors, configuration requirements).
+Common failures: See `references/pax-aio/troubleshooting.md#offline-transactions` for offline-specific errors (SDK method names, EMV amount errors, configuration requirements).
 
 ---
 
@@ -397,7 +397,7 @@ when the app has no dynamic price source. If `project-plan.md` specifies a
 
 Read these two files before writing any code:
 1. `project-plan.md` (project root) — contains project context and payment entry points
-2. `<GENAI_SKILLS_REPO>/src/skills/visa-acceptance-best-practices/references/activities/act_08_implement-offline-transactions.md` — the activity definition
+2. `<GENAI_SKILLS_REPO>/src/skills/visa-acceptance-best-practices/references/pax-aio/activities/act_08_implement-offline-transactions.md` — the activity definition
 
 Also read for API reference:
 3. Fetch [PAX AIO Payment Services](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-payment-txn-intro.md) (Offline Transactions section)

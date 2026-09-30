@@ -405,7 +405,7 @@ If the build fails:
 
 ## Troubleshooting
 
-See `references/troubleshooting.md#pre-authorization` for pre-auth errors (autoCapture missing, null identifier, cashback not allowed, Currency import).
+See `references/pax-aio/troubleshooting.md#pre-authorization` for pre-auth errors (autoCapture missing, null identifier, cashback not allowed, Currency import).
 
 ## Acceptance Criteria
 
@@ -456,7 +456,7 @@ source. If `project-plan.md` specifies a `payment_amount_source` expression, use
 
 Read these two files before writing any code:
 1. `project-plan.md` (project root) — contains project context and payment entry points
-2. `references/activities/act_06_implement-pre-authorization.md`
+2. `references/pax-aio/activities/act_06_implement-pre-authorization.md`
 
 Also read for API reference:
 3. Fetch [PAX AIO Payment Services](https://developer.visaacceptance.com/docs/vas/en-us/pax-all-in-one/integration/all/na/pax-all-in-one/pax-aio-payment-txn-intro.md) (Pre-Authorization, Incremental Authorization sections)
