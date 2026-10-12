@@ -37,17 +37,21 @@ The skill reads from [developer.visaacceptance.com/llms.txt](https://developer.v
 
 ## Installation
 
-You can install the skills repository using NPX:
+The `SKILL.md` format (`name` + `description` frontmatter) is compatible with both **Claude Code** and **IBM Bob** — no separate skill file is needed for each platform.
+
+You can install the skills repository using NPX (Claude Code only):
 
 ```bash
 npx skills add visa/ai
 ```
 
-Or clone the repository manually:
+Or clone the repository manually and copy the skill into your AI assistant's skills directory:
 
 ```bash
 git clone https://github.com/visa/ai.git
 ```
+
+### Claude Code
 
 **Project-level** (available in a single project):
 
@@ -59,4 +63,18 @@ cp -r ai/skills/<skill-name> <your-project>/.claude/skills/
 
 ```bash
 cp -r ai/skills/<skill-name> ~/.claude/skills/
+```
+
+### IBM Bob
+
+**Project-level** (available in a single project):
+
+```bash
+cp -r ai/skills/<skill-name> <your-project>/.bob/skills/
+```
+
+**Global** (available across all projects):
+
+```bash
+cp -r ai/skills/<skill-name> ~/.bob/skills/
 ```

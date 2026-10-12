@@ -1,6 +1,6 @@
 # Visa AI
 
-AI tools, examples, and integrations for the Visa Developer Platform. This repository brings together reusable packages, client examples, an AI agent demo, Claude Code skills, a Gemini CLI extension, and documentation resources for building AI-powered experiences with Visa APIs.
+AI tools, examples, and integrations for the Visa Developer Platform. This repository brings together reusable packages, client examples, an AI agent demo, Claude Code/IBM Bob skills, a Gemini CLI extension, and documentation resources for building AI-powered experiences with Visa APIs.
 
 ## What's Inside
 
@@ -9,7 +9,7 @@ AI tools, examples, and integrations for the Visa Developer Platform. This repos
 | [`packages/`](#packages) | Reusable npm packages for Visa API integration |
 | [`apps/`](#client-usage-examples) | Client usage examples (MCP, VIC API, VDP API) |
 | [`vic-agent/`](#agent-demo) | AI agent demonstrating VTS card tokenization and Visa Passkey usage (LangGraph + Next.js) |
-| [`skills/`](#skills-claude-code) | AI assistant skills for Claude Code |
+| [`skills/`](#skills) | AI assistant skills for Claude Code and IBM Bob |
 | [`gemini-extension.json`](#gemini-cli-extension) | Gemini CLI extension for Visa Documentation MCP Server (VIC + VDP) |
 
 ## Packages
@@ -39,15 +39,18 @@ The [`vic-agent/`](./vic-agent) directory contains a LangGraphJS-powered AI agen
 
 See [vic-agent/README.md](./vic-agent/README.md) for setup instructions.
 
-## Skills (Claude Code)
+## Skills
 
-The [`skills/`](./skills) directory contains skills for Claude Code that provide best practices and integration guidance for the Visa Developer Platform.
+The [`skills/`](./skills) directory contains skills for Claude Code and IBM Bob that provide best practices and integration guidance for the Visa Developer Platform.
 
 Install a skill into your project:
 
 ```bash
 git clone https://github.com/visa/ai.git
+# Claude Code
 cp -r ai/skills/<skill-name> <your-project>/.claude/skills/
+# IBM Bob
+cp -r ai/skills/<skill-name> <your-project>/.bob/skills/
 ```
 
 See [skills/README.md](./skills/README.md) for available skills and installation options.
