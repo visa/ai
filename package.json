@@ -26,6 +26,7 @@
     "model-context-protocol",
     "gemini",
     "claude",
+    "ibm-bob",
     "skills"
   ],
   "devDependencies": {
