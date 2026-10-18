@@ -8,18 +8,25 @@ import type { XPayTokenParams } from './types.js';
  * @param params - Parameters for token generation
  * @returns Promise resolving to the X-Pay token string
  */
-export function createXPayToken({ sharedSecret, requestUrl, body = '' }: XPayTokenParams): string {
+export function createXPayToken({
+  sharedSecret,
+  requestUrl,
+  body = '',
+  timestamp,
+}: XPayTokenParams): string {
   // Extract resource path from URL
   const parsedUrl = new URL(requestUrl);
   const resourcePath = parsedUrl.pathname.replace(/^\/(vacp|vdp)\//, '').replace(/^\//, ''); // Remove "/vacp/" or "/vdp/" prefix, or just leading slash
 
-  const queryParams = parsedUrl.search.slice(1);
+  // Visa specification requirement: query parameters must be sorted in lexicographical (alphabetical) order
+  parsedUrl.searchParams.sort();
+  const queryParams = parsedUrl.searchParams.toString();
   const requestBody = normalizeBody(body);
   // Generate timestamp (Unix epoch in seconds)
-  const timestamp = Math.floor(Date.now() / 1000);
+  const tokenTimestamp = timestamp ?? Math.floor(Date.now() / 1000);
 
   // Create pre-hash string
-  const preHashString = buildPreHashString(timestamp, resourcePath, queryParams, requestBody);
+  const preHashString = buildPreHashString(tokenTimestamp, resourcePath, queryParams, requestBody);
 
   // Create HMAC-SHA256 hash
   const hashString = crypto
@@ -28,7 +35,7 @@ export function createXPayToken({ sharedSecret, requestUrl, body = '' }: XPayTok
     .digest('hex');
 
   // Return X-Pay token in format: xv2:{timestamp}:{hash}
-  return `xv2:${timestamp}:${hashString}`;
+  return `xv2:${tokenTimestamp}:${hashString}`;
 }
 
 /**

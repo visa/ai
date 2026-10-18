@@ -22,6 +22,8 @@ export interface XPayTokenParams {
   requestUrl: string;
   /** Optional request body (string or object) */
   body?: string | object;
+  /** Optional Unix epoch timestamp in seconds override (defaults to current time) */
+  timestamp?: number;
 }
 
 /**

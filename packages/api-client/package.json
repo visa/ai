@@ -14,6 +14,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
+    "test": "tsx --test test/*.test.ts",
     "lint": "eslint . --ext .ts,.js,.mjs",
     "lint:fix": "eslint . --ext .ts,.js,.mjs --fix",
     "format": "prettier --write ."

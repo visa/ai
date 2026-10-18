@@ -1,10 +1,15 @@
 import type { VicApiError } from './types.js';
 
 /**
- * Extracts correlation ID from response headers
+ * Extracts correlation ID from response headers (case-insensitive)
  */
 export function getCorrelationId(headers: Record<string, string>): string | undefined {
-  return headers['x-correlation-id'] || headers['X-CORRELATION-ID'];
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === 'x-correlation-id') {
+      return value;
+    }
+  }
+  return undefined;
 }
 
 /**
